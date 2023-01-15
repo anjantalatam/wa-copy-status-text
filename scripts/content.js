@@ -44,15 +44,6 @@ waitForElm("div#app > div > span:nth-child(3)").then((statusTab) => {
           if (statusText) {
             console.log(statusText.innerText, "textt");
           }
-          // waitForElm(
-          //   'div#app > div > span:nth-child(3) > div > span > div[tabindex="-1"]',
-          //   {
-          //     childList: true,
-          //     subtree: false,
-          //   }
-          // ).then((statusElm) => {
-          //   console.log(statusElm, "found status element");
-          // });
         });
 
         statusDivObserver.observe(

@@ -2,7 +2,7 @@ let initialSpan = document.querySelector(
   "div#app > div > span:nth-child(3)"
 )?.innerHTML;
 
-function waitForElm(selector) {
+function waitForElm(selector, opts) {
   return new Promise((resolve) => {
     if (document.querySelector(selector)) {
       return resolve(document.querySelector(selector));
@@ -15,21 +15,59 @@ function waitForElm(selector) {
       }
     });
 
-    observer.observe(document.body, {
+    const options = opts ?? {
       childList: true,
       subtree: true,
-    });
+    };
+
+    observer.observe(document.body, options);
   });
 }
 
-waitForElm("div#app > div > span:nth-child(3)").then((elm) => {
+waitForElm("div#app > div > span:nth-child(3)").then((statusTab) => {
+  let isStatusTab = false;
   console.log("element found");
-  const observer = new MutationObserver(() => {
-    console.log("navigated from home to status or status to home");
-    // init();
+  const statusObserver = new MutationObserver(() => {
+    isStatusTab = !isStatusTab;
+    console.log("status opened/closed", isStatusTab);
+
+    waitForElm("div#app > div > span:nth-child(3) > div > span> div").then(
+      (statusTextElm) => {
+        console.log("found", statusTextElm);
+        const statusDivObserver = new MutationObserver((mutations) => {
+          console.log("text/video seen", mutations);
+
+          const statusText = document.querySelector(
+            "#app > div > span:nth-child(3) > div > span > div > div > span > div > div > div > div > div:nth-child(5) > div > div > span"
+          );
+
+          if (statusText) {
+            console.log(statusText.innerText, "textt");
+          }
+          // waitForElm(
+          //   'div#app > div > span:nth-child(3) > div > span > div[tabindex="-1"]',
+          //   {
+          //     childList: true,
+          //     subtree: false,
+          //   }
+          // ).then((statusElm) => {
+          //   console.log(statusElm, "found status element");
+          // });
+        });
+
+        statusDivObserver.observe(
+          document.querySelector(
+            "div#app > div > span:nth-child(3) > div > span"
+          ),
+          {
+            childList: true,
+          }
+        );
+      }
+    );
   });
 
-  observer.observe(elm, {
+  statusObserver.observe(statusTab, {
     subtree: false,
     childList: true,
   });
